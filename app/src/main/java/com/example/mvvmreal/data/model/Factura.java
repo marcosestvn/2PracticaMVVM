@@ -27,7 +27,7 @@ public class Factura {
 
 
 
-    public Factura(String descEstado, double importeOrdenacion, String fecha) {
+    public Factura(String descEstado, double importeOrdenacion, @NonNull String fecha) {
         this.descEstado = descEstado;
         this.importeOrdenacion = importeOrdenacion;
         this.fecha = fecha;

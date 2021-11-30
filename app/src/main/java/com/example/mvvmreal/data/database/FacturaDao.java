@@ -22,6 +22,4 @@ public interface FacturaDao {
     @Insert
     void insert(Factura factura);
 
-    @Delete
-    void deleteFactura(Factura factura);
 }

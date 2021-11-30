@@ -12,6 +12,7 @@
         android:layout_height="match_parent"
         android:paddingStart="@dimen/normal_padding"
         android:paddingEnd="0dp">
+
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -51,11 +52,12 @@
                 android:layout_height="48dp"
                 android:layout_marginTop="16dp"
                 android:contentDescription="@string/botonCerrar"
+                android:src="@android:drawable/ic_menu_close_clear_cancel"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.956"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                app:srcCompat="@android:drawable/ic_menu_close_clear_cancel" />
+                android:foreground="?attr/selectableItemBackground"/>
 
             <TextView
                 android:id="@+id/valorSlider"
@@ -291,7 +293,6 @@
                 android:padding="10dp"
                 android:paddingStart="50dp"
                 android:paddingEnd="50dp"
-
                 android:text="@string/botonFiltrar"
                 android:textColor="@color/white"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -306,12 +307,17 @@
                 android:layout_marginTop="8dp"
                 android:layout_marginBottom="8dp"
                 android:background="@drawable/round_button_no_background"
+                android:padding="10dp"
+                android:paddingStart="12dp"
+                android:paddingEnd="12dp"
                 android:text="@string/botonCerrarFiltros"
+                android:textAlignment="gravity"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/botonFiltrar"
                 app:layout_constraintVertical_bias="0.0" />
+
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </ScrollView>

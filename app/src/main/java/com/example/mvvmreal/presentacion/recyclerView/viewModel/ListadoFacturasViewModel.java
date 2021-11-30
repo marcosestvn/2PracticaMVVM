@@ -1,5 +1,6 @@
 package com.example.mvvmreal.presentacion.recyclerView.viewModel;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -8,57 +9,46 @@ import android.util.Log;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.Executors;
-
 import com.example.mvvmreal.data.database.AppDatabase;
-import com.example.mvvmreal.util.Constantes;
-import com.example.mvvmreal.domain.handlers.DefaultUseCaseCallbackHandler;
+import com.example.mvvmreal.data.model.Factura;
 import com.example.mvvmreal.data.model.WrapperFiltro;
 import com.example.mvvmreal.data.repository.FacturaRepository;
-import com.example.mvvmreal.data.model.Factura;
-import com.example.mvvmreal.data.model.RespuestaFactura;
 import com.example.mvvmreal.data.repository.FacturaRepositoryNoInternet;
-import com.example.mvvmreal.data.database.FacturaDao;
-import com.example.mvvmreal.domain.useCase.GetFacturasUseCase;
-import com.example.mvvmreal.domain.executor.UseCaseCallBack;
+import com.example.mvvmreal.domain.handlers.DefaultUseCaseCallbackHandler;
 import com.example.mvvmreal.domain.interfaces.FacturaRepositoryInterface;
+import com.example.mvvmreal.domain.useCase.GetFacturasUseCase;
+import com.example.mvvmreal.util.Constantes;
 import com.google.gson.Gson;
 
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 
+import java.util.List;
+import java.util.Objects;
+import java.util.concurrent.Executors;
+
 
 public class ListadoFacturasViewModel extends ViewModel {
+    @SuppressLint("StaticFieldLeak")
     private final Context context;
     public MutableLiveData<List<Factura>> facturas;
-    private final Gson converter = new Gson();
+    private final Gson converter ;
     private WrapperFiltro wrapperMain;
-    public FacturaRepository repositorio;
+    private AppDatabase db ;
 
     public ListadoFacturasViewModel(Context context) {
         this.context = context;
-        this.repositorio = new FacturaRepository(context);
         this.wrapperMain = new WrapperFiltro();
+        this.converter= new Gson();
+        this.db=AppDatabase.getINSTANCE(context);
 
         getFacturaRepository();
 
-        setFacturas(new MutableLiveData<List<Factura>>());
+        setFacturas(new MutableLiveData<>());
 
         getFacturas();
-        gg();
 
-    }
-
-    public void obtenerFacturas() throws IOException {
-
-    }
-
-    public MutableLiveData<List<Factura>> getFacturasViewModel() {
-        return this.facturas;
     }
 
     public void getFacturas() {
@@ -68,18 +58,11 @@ public class ListadoFacturasViewModel extends ViewModel {
         caso = new GetFacturasUseCase(new DefaultUseCaseCallbackHandler(), getFacturaRepository());
 
 
-        caso.customize(new UseCaseCallBack<RespuestaFactura>() {
+        caso.customize(result -> {
 
-            @Override
-            public void onResult(RespuestaFactura result) {
+            result.getFacturas().removeIf(factura -> !filtrar(factura));
+            facturas.postValue(result.getFacturas());
 
-                result.facturas.removeIf(factura -> !filtrar(factura));
-                facturas.postValue(result.facturas);
-
-
-                System.out.println("HOLA");
-                System.out.println(result.toString());
-            }
         });
 
 
@@ -95,20 +78,10 @@ public class ListadoFacturasViewModel extends ViewModel {
     private FacturaRepositoryInterface getFacturaRepository() {
 
         if (isConnected()) {
-            return new FacturaRepository(context);
+            return new FacturaRepository(db);
         } else {
-
-            return new FacturaRepositoryNoInternet(context);
+            return new FacturaRepositoryNoInternet(db);
         }
-        //TODO COMPROBAR SI HAY RED -> CREAR REPO INTERNET O REPO BD
-
-
-    }
-
-    public void gg() {
-
-
-
 
 
     }
@@ -121,7 +94,7 @@ public class ListadoFacturasViewModel extends ViewModel {
     }
 
     public void getMaxImporte() {
-        for (Factura f : facturas.getValue()
+        for (Factura f : Objects.requireNonNull(facturas.getValue())
         ) {
             if (this.wrapperMain.getImporteMaximo() < f.importeOrdenacion)
                 this.wrapperMain.setImporteMaximo((int) f.importeOrdenacion + 1);

@@ -12,6 +12,11 @@ public class Constantes {
     public static final String Opcion5 = "Plan de cuota";
 
 
+    //Opciones Loader
+    public static final String MostrarLoader="Mostrar";
+    public static final String OcultarLoader="Ocultar";
+
+
 
     //Intent valores
     public final static String WrapperMain = "wrapperMain";

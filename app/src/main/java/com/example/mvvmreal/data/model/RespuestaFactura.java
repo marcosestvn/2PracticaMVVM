@@ -3,8 +3,8 @@ package com.example.mvvmreal.data.model;
 import java.util.List;
 
 public class RespuestaFactura {
-    public List<Factura> facturas;
-    public String numFacturas;
+    private List<Factura> facturas;
+    private String numFacturas;
 
     public List<Factura> getFacturas() {
         return facturas;
