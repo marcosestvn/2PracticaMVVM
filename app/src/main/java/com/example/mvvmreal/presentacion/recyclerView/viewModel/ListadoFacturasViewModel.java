@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Executors;
 
+import com.example.mvvmreal.data.database.AppDatabase;
 import com.example.mvvmreal.util.Constantes;
 import com.example.mvvmreal.domain.handlers.DefaultUseCaseCallbackHandler;
 import com.example.mvvmreal.data.model.WrapperFiltro;
@@ -20,7 +21,6 @@ import com.example.mvvmreal.data.repository.FacturaRepository;
 import com.example.mvvmreal.data.model.Factura;
 import com.example.mvvmreal.data.model.RespuestaFactura;
 import com.example.mvvmreal.data.repository.FacturaRepositoryNoInternet;
-import com.example.mvvmreal.data.database.AppDatabase;
 import com.example.mvvmreal.data.database.FacturaDao;
 import com.example.mvvmreal.domain.useCase.GetFacturasUseCase;
 import com.example.mvvmreal.domain.executor.UseCaseCallBack;
@@ -40,8 +40,8 @@ public class ListadoFacturasViewModel extends ViewModel {
     public FacturaRepository repositorio;
 
     public ListadoFacturasViewModel(Context context) {
-        this.context=context;
-        this.repositorio = new FacturaRepository();
+        this.context = context;
+        this.repositorio = new FacturaRepository(context);
         this.wrapperMain = new WrapperFiltro();
 
         getFacturaRepository();
@@ -49,6 +49,7 @@ public class ListadoFacturasViewModel extends ViewModel {
         setFacturas(new MutableLiveData<List<Factura>>());
 
         getFacturas();
+        gg();
 
     }
 
@@ -82,7 +83,7 @@ public class ListadoFacturasViewModel extends ViewModel {
         });
 
 
-            Executors.newCachedThreadPool().execute(caso);
+        Executors.newCachedThreadPool().execute(caso);
 
 
     }
@@ -93,26 +94,24 @@ public class ListadoFacturasViewModel extends ViewModel {
 
     private FacturaRepositoryInterface getFacturaRepository() {
 
-        if(isConnected()){
-            return new FacturaRepository();
-        }else{
+        if (isConnected()) {
+            return new FacturaRepository(context);
+        } else {
 
-            Factura f1= new Factura("Pagada",21.0,"18/04/1998");
-            List<Factura> facturas = new ArrayList<>();
-            facturas.add(f1);
-            RespuestaFactura r = new RespuestaFactura(facturas,"1");
-
-            AppDatabase db= AppDatabase.getINSTANCE(context);
-            FacturaDao dao =db.facturaDao();
-            dao.insert(f1);
-
-            return new FacturaRepositoryNoInternet(dao);
+            return new FacturaRepositoryNoInternet(context);
         }
         //TODO COMPROBAR SI HAY RED -> CREAR REPO INTERNET O REPO BD
 
 
     }
 
+    public void gg() {
+
+
+
+
+
+    }
 
     public String getWrapperParsedToJson() {
         if (wrapperMain != null) {
@@ -194,7 +193,7 @@ public class ListadoFacturasViewModel extends ViewModel {
     public boolean isConnected() {
         boolean connected = false;
         try {
-            ConnectivityManager cm = (ConnectivityManager)context.getSystemService(Context.CONNECTIVITY_SERVICE);
+            ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
             NetworkInfo nInfo = cm.getActiveNetworkInfo();
             connected = nInfo != null && nInfo.isAvailable() && nInfo.isConnected();
             return connected;
