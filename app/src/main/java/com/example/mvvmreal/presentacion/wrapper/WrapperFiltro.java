@@ -1,4 +1,4 @@
-package com.example.mvvmreal.data.model;
+package com.example.mvvmreal.presentacion.wrapper;
 
 import androidx.annotation.NonNull;
 
@@ -7,17 +7,25 @@ import java.util.List;
 
 public class WrapperFiltro {
 
-    private Integer importeMaximo = 0;
-    private Integer importeFiltro = 0;
-    private List<String> estadosFiltro = new ArrayList<>();
-    private String fecha_desde = "";
-    private String fecha_hasta = "";
+    private Integer importeMaximo;
+    private Integer importeFiltro;
+    private final List<String> estadosFiltro;
+    private String fecha_desde;
+    private String fecha_hasta;
 
     //Constructor
     public WrapperFiltro() {
+        this.importeMaximo=0;
+        this.importeFiltro=0;
+        estadosFiltro= new ArrayList<>();
+        this.fecha_desde="";
+        this.fecha_hasta="";
     }
 
     public Integer getImporteMaximo() {
+        if(importeMaximo==null){
+            return null;
+        }
         return importeMaximo;
     }
 
@@ -49,13 +57,7 @@ public class WrapperFiltro {
                 '}';
     }
 
-    public void introducirEstadoFiltro(String estado) {
-        this.estadosFiltro.add(estado);
-    }
 
-    public void eliminarEstadoFiltro(String estado) {
-        this.estadosFiltro.remove(estado);
-    }
 
     public String getFecha_desde() {
         return fecha_desde;

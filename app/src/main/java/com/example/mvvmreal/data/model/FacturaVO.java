@@ -7,7 +7,7 @@ import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 
 @Entity
-public class Factura {
+public class FacturaVO {
 
     @PrimaryKey
     @ColumnInfo(name = "fecha")
@@ -27,7 +27,7 @@ public class Factura {
 
 
 
-    public Factura(String descEstado, double importeOrdenacion, @NonNull String fecha) {
+    public FacturaVO(String descEstado, double importeOrdenacion, @NonNull String fecha) {
         this.descEstado = descEstado;
         this.importeOrdenacion = importeOrdenacion;
         this.fecha = fecha;

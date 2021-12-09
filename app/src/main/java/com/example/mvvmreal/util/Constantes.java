@@ -40,5 +40,8 @@ public class Constantes {
     //Claves fechas
     public static final String Clave_1 ="desde";
     public static final String Clave_2="hasta";
+
+    //Util
+    public static final String espacio =" ";
 }
 

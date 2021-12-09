@@ -1,4 +1,4 @@
-package com.example.mvvmreal.presentacion.recyclerView.viewModel;
+package com.example.mvvmreal.presentacion.listado;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
@@ -10,8 +10,8 @@ import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
 import com.example.mvvmreal.data.database.AppDatabase;
-import com.example.mvvmreal.data.model.Factura;
-import com.example.mvvmreal.data.model.WrapperFiltro;
+import com.example.mvvmreal.data.model.FacturaVO;
+import com.example.mvvmreal.presentacion.wrapper.WrapperFiltro;
 import com.example.mvvmreal.data.repository.FacturaRepository;
 import com.example.mvvmreal.data.repository.FacturaRepositoryNoInternet;
 import com.example.mvvmreal.domain.handlers.DefaultUseCaseCallbackHandler;
@@ -31,36 +31,23 @@ import java.util.concurrent.Executors;
 
 public class ListadoFacturasViewModel extends ViewModel {
     @SuppressLint("StaticFieldLeak")
-    private final Context context;
-    public MutableLiveData<List<Factura>> facturas;
-    private final Gson converter ;
+    public MutableLiveData<List<FacturaVO>> facturas;
     private WrapperFiltro wrapperMain;
-    private AppDatabase db ;
 
-    public ListadoFacturasViewModel(Context context) {
-        this.context = context;
+    public ListadoFacturasViewModel() {
         this.wrapperMain = new WrapperFiltro();
-        this.converter= new Gson();
-        this.db=AppDatabase.getINSTANCE(context);
-
-        getFacturaRepository();
-
-        setFacturas(new MutableLiveData<>());
-
-        getFacturas();
-
+        this.facturas = new MutableLiveData<>();
     }
 
-    public void getFacturas() {
+    public void getFacturas(Context context) {
 
 
         GetFacturasUseCase caso;
-        caso = new GetFacturasUseCase(new DefaultUseCaseCallbackHandler(), getFacturaRepository());
+        caso = new GetFacturasUseCase(new DefaultUseCaseCallbackHandler(), getFacturaRepository(context));
 
 
         caso.customize(result -> {
-
-            result.getFacturas().removeIf(factura -> !filtrar(factura));
+            result.getFacturas().removeIf(facturaVO  -> !filtrar(facturaVO));
             facturas.postValue(result.getFacturas());
 
         });
@@ -71,13 +58,10 @@ public class ListadoFacturasViewModel extends ViewModel {
 
     }
 
-    private void setFacturas(MutableLiveData<List<Factura>> facturas) {
-        this.facturas = facturas;
-    }
+    private FacturaRepositoryInterface getFacturaRepository(Context context) {
+        AppDatabase db=AppDatabase.getINSTANCE(context);
 
-    private FacturaRepositoryInterface getFacturaRepository() {
-
-        if (isConnected()) {
+        if (isConnected(context)) {
             return new FacturaRepository(db);
         } else {
             return new FacturaRepositoryNoInternet(db);
@@ -88,13 +72,13 @@ public class ListadoFacturasViewModel extends ViewModel {
 
     public String getWrapperParsedToJson() {
         if (wrapperMain != null) {
-            return this.converter.toJson(wrapperMain);
+            return new Gson().toJson(wrapperMain);
         }
         return null;
     }
 
     public void getMaxImporte() {
-        for (Factura f : Objects.requireNonNull(facturas.getValue())
+        for (FacturaVO f : Objects.requireNonNull(facturas.getValue())
         ) {
             if (this.wrapperMain.getImporteMaximo() < f.importeOrdenacion)
                 this.wrapperMain.setImporteMaximo((int) f.importeOrdenacion + 1);
@@ -102,12 +86,12 @@ public class ListadoFacturasViewModel extends ViewModel {
     }
 
     public void setWrapperJson(String wrapperJson) {
-        this.wrapperMain = converter.fromJson(wrapperJson, WrapperFiltro.class);
+        this.wrapperMain = new Gson().fromJson(wrapperJson, WrapperFiltro.class);
     }
 
     //Se realizan las funciones de filtros por cada campo a evaluar y se comparan las flags
     //si alguna flag es falsa eliminamos la factura de nuestra lista
-    public Boolean filtrar(Factura facturaEvaluada) {
+    public Boolean filtrar(FacturaVO facturaEvaluada) {
 
         Boolean flagImporte = filtrarPorImporte((int) facturaEvaluada.importeOrdenacion);
         Boolean flagEstados = filtrarPorEstados(facturaEvaluada.descEstado);
@@ -163,7 +147,7 @@ public class ListadoFacturasViewModel extends ViewModel {
         return true;
     }
 
-    public boolean isConnected() {
+    public boolean isConnected(Context context) {
         boolean connected = false;
         try {
             ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);

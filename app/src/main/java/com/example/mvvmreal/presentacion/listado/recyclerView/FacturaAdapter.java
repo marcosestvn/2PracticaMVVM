@@ -1,4 +1,4 @@
-package com.example.mvvmreal.presentacion.recyclerView;
+package com.example.mvvmreal.presentacion.listado.recyclerView;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -9,7 +9,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.mvvmreal.R;
-import com.example.mvvmreal.data.model.Factura;
+import com.example.mvvmreal.data.model.FacturaVO;
 
 import java.util.List;
 
@@ -23,10 +23,10 @@ public class FacturaAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 
     private final OnFacturaListener facturaClickListener;
     Context context;
-    private final List<Factura> facturas;
+    private final List<FacturaVO> facturas;
 
-    public FacturaAdapter(List<Factura> facturas,Context context, OnFacturaListener facturaClickListener) {
-        this.facturas=facturas;
+    public FacturaAdapter(List<FacturaVO> facturas, Context context, OnFacturaListener facturaClickListener) {
+        this.facturas = facturas;
         this.context = context;
         this.facturaClickListener=facturaClickListener;
     }

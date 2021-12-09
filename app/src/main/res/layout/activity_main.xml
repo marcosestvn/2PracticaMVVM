@@ -9,13 +9,13 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:context=".presentacion.recyclerView.MainActivity"
+        tools:context=".presentacion.listado.MainActivity"
         android:layout_marginStart="10dp">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            tools:context=".presentacion.recyclerView.MainActivity">
+            tools:context=".presentacion.listado.MainActivity">
 
             <androidx.appcompat.widget.Toolbar
                 android:id="@+id/toolbar"

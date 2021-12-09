@@ -1,23 +1,24 @@
-package com.example.mvvmreal.presentacion.recyclerView;
-
-import androidx.appcompat.app.AppCompatActivity;
+package com.example.mvvmreal.presentacion.filtro;
 
 import android.content.Intent;
 import android.os.Bundle;
 import android.widget.CheckBox;
 import android.widget.SeekBar;
 
-import com.example.mvvmreal.util.Constantes;
-import com.example.mvvmreal.util.MyUtil;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.ViewModelProvider;
+
 import com.example.mvvmreal.R;
 import com.example.mvvmreal.databinding.ActivityFiltradoBinding;
-import com.example.mvvmreal.presentacion.recyclerView.viewModel.FiltradoViewModel;
+import com.example.mvvmreal.util.Constantes;
+import com.example.mvvmreal.util.Util;
 
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 
 import java.util.List;
+import java.util.Objects;
 
 public class FiltradoActivity extends AppCompatActivity {
 
@@ -26,52 +27,62 @@ public class FiltradoActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        binding = ActivityFiltradoBinding.inflate(getLayoutInflater());
         super.onCreate(savedInstanceState);
-        setContentView(binding.getRoot());
+        inicializarPantalla();
         recogerIntentYPrepararWrapper();
         bind();
-        pintarView();
+    }
+
+    private void inicializarPantalla() {
+        binding = ActivityFiltradoBinding.inflate(getLayoutInflater());
+        setContentView(binding.getRoot());
     }
 
     private void recogerIntentYPrepararWrapper() {
-
         Intent intent = getIntent();
+        inicializarViewModel(intent.getStringExtra(Constantes.WrapperMain));
+    }
 
-        this.filtradoViewModel = new FiltradoViewModel(intent.getStringExtra(Constantes.WrapperMain));
+    private void inicializarViewModel(String wrapper) {
+        filtradoViewModel = new ViewModelProvider(this).get(FiltradoViewModel.class);
+        this.filtradoViewModel.setWrapperFiltro(wrapper);
+        filtradoViewModel.wrapper.observe(this, Observer -> pintarView());
     }
 
 
     private void pintarView() {
         //SeekBar o Slider
-        binding.maxSeekbar.setText(MyUtil.concatenarConEspacios((filtradoViewModel.getWrapper().getImporteMaximo()).toString(), Constantes.Divisa));
+        binding.maxSeekbar.setText(Util.concatenarConEspacios((Objects.requireNonNull(filtradoViewModel.wrapper.getValue()).getImporteMaximo()).toString(), Constantes.Divisa));
 
+        binding.sliderImporte.setProgress(filtradoViewModel.wrapper.getValue().getImporteFiltro());
 
-        binding.sliderImporte.setProgress(filtradoViewModel.getWrapper().getImporteFiltro());
+        binding.valorSlider.setText(Util.concatenarConEspacios(filtradoViewModel.wrapper.getValue().getImporteFiltro().toString(), Constantes.Divisa));
 
-        binding.valorSlider.setText(MyUtil.concatenarConEspacios(filtradoViewModel.getWrapper().getImporteFiltro().toString(), Constantes.Divisa));
+        binding.sliderImporte.setMax(filtradoViewModel.wrapper.getValue().getImporteMaximo());
 
-        binding.sliderImporte.setMax(filtradoViewModel.getWrapper().getImporteMaximo());
+        pintarFechas();
 
-        if (!filtradoViewModel.getWrapper().getFecha_desde().isEmpty()) {
-            binding.fechaDesde.setText(filtradoViewModel.getWrapper().getFecha_desde());
+        pintarCheckBox(filtradoViewModel.wrapper.getValue().getEstadosFiltro());
+
+    }
+    private void pintarFechas(){
+        if (!Objects.requireNonNull(filtradoViewModel.wrapper.getValue()).getFecha_desde().isEmpty()) {
+            binding.fechaDesde.setText(filtradoViewModel.wrapper.getValue().getFecha_desde());
         } else {
             binding.fechaDesde.setText(getString(R.string.dia_mes_año));
         }
 
-        if (!filtradoViewModel.getWrapper().getFecha_hasta().isEmpty()) {
-            binding.fechaHasta.setText(filtradoViewModel.getWrapper().getFecha_hasta());
+        if (!filtradoViewModel.wrapper.getValue().getFecha_hasta().isEmpty()) {
+            binding.fechaHasta.setText(filtradoViewModel.wrapper.getValue().getFecha_hasta());
 
         } else {
             binding.fechaHasta.setText(getString(R.string.dia_mes_año));
 
         }
-        pintarCheckBox(filtradoViewModel.getWrapper().getEstadosFiltro());
-
     }
 
     //Mñétodo para pintar los chekbox en checked o no checked
-    public void pintarCheckBox(List<String> estados) {
+    private void pintarCheckBox(List<String> estados) {
 
         binding.idOpcion1.setChecked(estados.contains(Constantes.Opcion1));
 
@@ -84,7 +95,7 @@ public class FiltradoActivity extends AppCompatActivity {
         binding.idOpcion5.setChecked(estados.contains(Constantes.Opcion5));
     }
 
-    public void bind() {
+    private void bind() {
 
         //TextView fecha desde
         binding.fechaDesde.setOnClickListener(listener -> mostrarDialog(R.id.fechaDesde));
@@ -107,8 +118,8 @@ public class FiltradoActivity extends AppCompatActivity {
             comprobarCheckBox();
             comprobarImporteSeekBar();
             Intent intent = new Intent();
-            intent.putExtra(Constantes.WrapperFiltro,filtradoViewModel.getWrapperParseado());
-            setResult(1,intent);
+            intent.putExtra(Constantes.WrapperFiltro, filtradoViewModel.getWrapperParseado());
+            setResult(1, intent);
             finish();
         });
 
@@ -117,7 +128,7 @@ public class FiltradoActivity extends AppCompatActivity {
 
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                binding.valorSlider.setText(MyUtil.concatenar(String.valueOf(progress), Constantes.Divisa));
+                binding.valorSlider.setText(Util.concatenar(String.valueOf(progress), Constantes.Divisa));
             }
 
             @Override
@@ -135,12 +146,12 @@ public class FiltradoActivity extends AppCompatActivity {
     }
 
     //Método de comprobación del valor del SeekBar
-    public void comprobarImporteSeekBar() {
-        filtradoViewModel.getWrapper().setImporteFiltro((Math.max(binding.sliderImporte.getProgress(), 0)));
+    private void comprobarImporteSeekBar() {
+        Objects.requireNonNull(filtradoViewModel.wrapper.getValue()).setImporteFiltro((Math.max(binding.sliderImporte.getProgress(), 0)));
     }
 
     //Método de comprobación de Checkbox
-    public void comprobarCheckBox() {
+    private void comprobarCheckBox() {
 
         comprobarCheckboxIndividual(binding.idOpcion1, Constantes.Opcion1);
         comprobarCheckboxIndividual(binding.idOpcion2, Constantes.Opcion2);
@@ -150,7 +161,7 @@ public class FiltradoActivity extends AppCompatActivity {
 
     }
 
-    public void comprobarCheckboxIndividual(CheckBox checkbox, String opcion) {
+    private void comprobarCheckboxIndividual(CheckBox checkbox, String opcion) {
         if (checkbox.isChecked()) {
             filtradoViewModel.anyadirEstadoFiltro(opcion);
         } else {
@@ -158,8 +169,8 @@ public class FiltradoActivity extends AppCompatActivity {
         }
     }
 
-    public void mostrarDialog(int id) {
-        DatePickerFragment datePicker = DatePickerFragment.newInstance((datepicker2, year, month, day) -> onDateSelected(day, month, year, id));
+    private void mostrarDialog(int id) {
+        DateFragment datePicker = DateFragment.newInstance((datepicker2, year, month, day) -> onDateSelected(day, month, year, id));
         String fechaDesdeTemp = filtradoViewModel.getFecha(Constantes.Clave_1);
         String fechaHastaTemp = filtradoViewModel.getFecha(Constantes.Clave_2);
 
@@ -198,15 +209,16 @@ public class FiltradoActivity extends AppCompatActivity {
         month++;
 
         DateTime fecha = DateTimeFormat.forPattern(Constantes.DefaultPatternFecha)
-                .parseDateTime(MyUtil.concatenar((day.toString()), "/", ((month).toString()), "/", (year.toString())));
+                .parseDateTime(Util.concatenar((day.toString()), "/", ((month).toString()), "/", (year.toString())));
 
 
         if (id == R.id.fechaHasta) {
-            filtradoViewModel.getWrapper().setFecha_hasta(ff.print(fecha));
+            Objects.requireNonNull(filtradoViewModel.wrapper.getValue()).setFecha_hasta(ff.print(fecha));
         }
 
         if (id == R.id.fechaDesde) {
-            filtradoViewModel.getWrapper().setFecha_desde(ff.print(fecha));
+            Objects.requireNonNull(filtradoViewModel.wrapper.getValue()).setFecha_desde(ff.print(fecha));
         }
+        pintarFechas();
     }
 }

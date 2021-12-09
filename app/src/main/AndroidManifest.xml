@@ -13,10 +13,10 @@
         android:theme="@style/Theme.MVVMReal"
         android:usesCleartextTraffic="true">
         <activity
-            android:name=".presentacion.recyclerView.FiltradoActivity"
+            android:name=".presentacion.filtro.FiltradoActivity"
             android:exported="false" />
         <activity
-            android:name=".presentacion.recyclerView.MainActivity"
+            android:name=".presentacion.listado.MainActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

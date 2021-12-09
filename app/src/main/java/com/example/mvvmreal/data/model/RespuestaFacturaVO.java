@@ -2,11 +2,11 @@ package com.example.mvvmreal.data.model;
 
 import java.util.List;
 
-public class RespuestaFactura {
-    private List<Factura> facturas;
+public class RespuestaFacturaVO {
+    private List<FacturaVO> facturas;
     private String numFacturas;
 
-    public List<Factura> getFacturas() {
+    public List<FacturaVO> getFacturas() {
         return facturas;
     }
 
@@ -14,7 +14,10 @@ public class RespuestaFactura {
         return numFacturas;
     }
 
-    public RespuestaFactura(List<Factura> facturas, String numFacturas) {
+    public String toString(){
+    return facturas.toString();
+    }
+    public RespuestaFacturaVO(List<FacturaVO> facturas, String numFacturas) {
         this.facturas = facturas;
         this.numFacturas = numFacturas;
     }

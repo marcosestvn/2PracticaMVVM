@@ -1,4 +1,4 @@
-package com.example.mvvmreal.presentacion.recyclerView;
+package com.example.mvvmreal.presentacion.filtro;
 
 import android.app.DatePickerDialog;
 import android.app.Dialog;
@@ -16,7 +16,7 @@ import org.joda.time.format.DateTimeFormatter;
 import java.util.Calendar;
 import java.util.Date;
 
-public class DatePickerFragment extends DialogFragment {
+public class DateFragment extends DialogFragment {
 
     private DatePickerDialog.OnDateSetListener listener;
     private final Calendar calendario = Calendar.getInstance();
@@ -31,8 +31,8 @@ public class DatePickerFragment extends DialogFragment {
 
     DatePickerDialog picker;
 
-    public static DatePickerFragment newInstance(DatePickerDialog.OnDateSetListener listener) {
-        DatePickerFragment fragment = new DatePickerFragment();
+    public static DateFragment newInstance(DatePickerDialog.OnDateSetListener listener) {
+        DateFragment fragment = new DateFragment();
         fragment.setListener(listener);
         return fragment;
     }

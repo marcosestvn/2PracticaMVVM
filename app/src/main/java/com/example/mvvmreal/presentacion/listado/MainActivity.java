@@ -1,4 +1,4 @@
-package com.example.mvvmreal.presentacion.recyclerView;
+package com.example.mvvmreal.presentacion.listado;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
@@ -12,14 +12,16 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.mvvmreal.R;
-import com.example.mvvmreal.data.model.Factura;
+import com.example.mvvmreal.data.model.FacturaVO;
 import com.example.mvvmreal.databinding.ActivityMainBinding;
-import com.example.mvvmreal.presentacion.recyclerView.viewModel.ListadoFacturasViewModel;
+import com.example.mvvmreal.presentacion.filtro.FiltradoActivity;
+import com.example.mvvmreal.presentacion.listado.recyclerView.FacturaAdapter;
 import com.example.mvvmreal.util.Constantes;
 
 import java.util.List;
@@ -33,38 +35,55 @@ public class MainActivity extends AppCompatActivity implements FacturaAdapter.On
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        binding = ActivityMainBinding.inflate(getLayoutInflater());
-        setContentView(binding.getRoot());
+        inicializarPantalla();
         bind();
+        facturasViewModel.getFacturas(this);
     }
 
     private void opcionesLoading(String opcion) {
         if (opcion.equals(Constantes.MostrarLoader)) {
             binding.contenido.setVisibility(View.GONE);
             binding.progressBar.setVisibility(View.VISIBLE);
-        }else if(opcion.equals(Constantes.OcultarLoader)){
+        } else if (opcion.equals(Constantes.OcultarLoader)) {
             binding.contenido.setVisibility(View.VISIBLE);
             binding.progressBar.setVisibility(View.GONE);
         }
     }
 
+    private void inicializarPantalla() {
+        binding = ActivityMainBinding.inflate(getLayoutInflater());
+        setContentView(binding.getRoot());
+    }
 
     //Inicialización de Toolbar
     private void bind() {
-        facturasViewModel = new ListadoFacturasViewModel(getApplicationContext());
+        bindToolBar();
+        bindListeners();
+        bindObservers();
+    }
+
+    private void bindToolBar() {
         Toolbar toolbar = binding.toolbar;
         setSupportActionBar(toolbar);
+    }
 
+    private void bindListeners() {
+        //Volver
+        binding.toolbar.setNavigationOnClickListener(onFiltrosIconClickListener -> finish());
+    }
+
+    private void bindObservers() {
+        inicializarViewModel();
         //Observador lista de facturas
         facturasViewModel.facturas.observe(this, facturas -> {
             initRecyclerView(facturasViewModel.facturas.getValue());
             facturasViewModel.getMaxImporte();
         });
-
-
-        //Volver
-        binding.toolbar.setNavigationOnClickListener(onFiltrosIconClickListener -> finish());
     }
+    private void inicializarViewModel() {
+        facturasViewModel = new ViewModelProvider(this).get(ListadoFacturasViewModel.class);
+    }
+
 
 
     //Inicialización del menu del toolbar
@@ -80,7 +99,6 @@ public class MainActivity extends AppCompatActivity implements FacturaAdapter.On
 
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        System.out.println(item);
         if (item.getItemId() == R.id.icono_filtro) {
             int LAUNCH_SECOND_ACTIVITY = 1;
             Intent i = new Intent(this, FiltradoActivity.class);
@@ -92,7 +110,7 @@ public class MainActivity extends AppCompatActivity implements FacturaAdapter.On
 
 
     @SuppressLint("NotifyDataSetChanged")
-    public void initRecyclerView(List<Factura> f3) {
+    public void initRecyclerView(List<FacturaVO> f3) {
         RecyclerView recyclerView = findViewById(R.id.recycler_facturas);
         FacturaAdapter adapter = new FacturaAdapter(f3, this, this);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
@@ -109,7 +127,7 @@ public class MainActivity extends AppCompatActivity implements FacturaAdapter.On
     }
 
     //Lógica para generar y mostrar Dialog en View
-    public void mostrarDialog() {
+    private void mostrarDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle(R.string.titutloDialogFactura);
         builder.setMessage(R.string.cuerpoDialogFactura);
@@ -127,11 +145,12 @@ public class MainActivity extends AppCompatActivity implements FacturaAdapter.On
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         if (resultCode == 1) {
-            assert data != null;
-            opcionesLoading(Constantes.MostrarLoader);
-            this.facturasViewModel.setWrapperJson(data.getStringExtra(Constantes.WrapperFiltro));
-            this.facturasViewModel.getFacturas();
-            super.onActivityResult(requestCode, resultCode, data);
+            if (data != null) {
+                opcionesLoading(Constantes.MostrarLoader);
+                this.facturasViewModel.setWrapperJson(data.getStringExtra(Constantes.WrapperFiltro));
+                this.facturasViewModel.getFacturas(this);
+                super.onActivityResult(requestCode, resultCode, data);
+            }
         }
     }
 }

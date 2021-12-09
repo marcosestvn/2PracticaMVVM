@@ -1,12 +1,12 @@
 package com.example.mvvmreal.domain.useCase;
 
-import com.example.mvvmreal.data.model.RespuestaFactura;
+import com.example.mvvmreal.data.model.RespuestaFacturaVO;
 import com.example.mvvmreal.domain.executor.UseCaseCallBack;
 import com.example.mvvmreal.domain.executor.UseCaseCallbackHandler;
 import com.example.mvvmreal.domain.interfaces.FacturaRepositoryInterface;
 
 import java.io.IOException;
-public class GetFacturasUseCase extends UseCase<RespuestaFactura> {
+public class GetFacturasUseCase extends UseCase<RespuestaFacturaVO> {
     private final FacturaRepositoryInterface repository;
 
 
@@ -15,7 +15,7 @@ public class GetFacturasUseCase extends UseCase<RespuestaFactura> {
         this.repository=repository;
     }
 
-    public void customize(UseCaseCallBack<RespuestaFactura> callBack){
+    public void customize(UseCaseCallBack<RespuestaFacturaVO> callBack){
 
         setCallback(callBack);
     }

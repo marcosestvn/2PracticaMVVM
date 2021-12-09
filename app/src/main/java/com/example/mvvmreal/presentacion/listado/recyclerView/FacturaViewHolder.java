@@ -1,14 +1,14 @@
-package com.example.mvvmreal.presentacion.recyclerView;
+package com.example.mvvmreal.presentacion.listado.recyclerView;
 
 import android.view.View;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.mvvmreal.data.model.FacturaVO;
 import com.example.mvvmreal.util.Constantes;
-import com.example.mvvmreal.util.MyUtil;
+import com.example.mvvmreal.util.Util;
 import com.example.mvvmreal.databinding.RowLayoutBinding;
-import com.example.mvvmreal.data.model.Factura;
 
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
@@ -33,7 +33,7 @@ public class FacturaViewHolder extends RecyclerView.ViewHolder implements View.O
         this.onFacturaListener=facturaClickListener;
     }
 
-    public void bind(Factura factura) {
+    public void bind(FacturaVO factura) {
         Locale local = new Locale(Constantes.Idioma, Constantes.Pais);
         Locale.setDefault(local);
         DateTime fechaFormateada = DateTimeFormat.forPattern(Constantes.DefaultPatternFecha).parseDateTime(factura.fecha);
@@ -45,7 +45,7 @@ public class FacturaViewHolder extends RecyclerView.ViewHolder implements View.O
             binding.estadoFactura.setVisibility(View.GONE);
         }
 
-        binding.fecha.setText(MyUtil.concatenarConEspacios(dia.print(fechaFormateada),MyUtil.primeraLetraToUpperCase(mes.print(fechaFormateada)), anyo.print(fechaFormateada)));
+        binding.fecha.setText(Util.concatenarConEspacios(dia.print(fechaFormateada), Util.primeraLetraToUpperCase(mes.print(fechaFormateada)), anyo.print(fechaFormateada)));
 
         binding.importeFactura.setText(stringBuilder.append(factura.importeOrdenacion).append(" €"));
         binding.factura.setOnClickListener(this);

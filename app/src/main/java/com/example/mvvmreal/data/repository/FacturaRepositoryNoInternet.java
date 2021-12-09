@@ -1,10 +1,8 @@
 package com.example.mvvmreal.data.repository;
 
-import android.content.Context;
-
 import com.example.mvvmreal.data.database.AppDatabase;
-import com.example.mvvmreal.data.model.Factura;
-import com.example.mvvmreal.data.model.RespuestaFactura;
+import com.example.mvvmreal.data.model.FacturaVO;
+import com.example.mvvmreal.data.model.RespuestaFacturaVO;
 import com.example.mvvmreal.data.database.FacturaDao;
 import com.example.mvvmreal.domain.interfaces.FacturaRepositoryInterface;
 
@@ -18,9 +16,9 @@ public class FacturaRepositoryNoInternet implements FacturaRepositoryInterface {
         this.dao= db.facturaDao();
     }
     @Override
-    public RespuestaFactura getFacturas() throws IOException {
-        List<Factura> facturas = dao.getAll();
-        return new RespuestaFactura(facturas,String.valueOf(facturas.size()));
+    public RespuestaFacturaVO getFacturas() throws IOException {
+        List<FacturaVO> facturas = dao.getAll();
+        return new RespuestaFacturaVO(facturas,String.valueOf(facturas.size()));
     }
 
 

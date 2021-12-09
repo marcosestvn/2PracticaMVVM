@@ -1,6 +1,6 @@
 package com.example.mvvmreal.util;
 
-public class MyUtil {
+public class Util {
 
     public static String concatenar(String... palabras) {
         StringBuilder sb = new StringBuilder(palabras.length);
@@ -13,7 +13,7 @@ public class MyUtil {
     public static String concatenarConEspacios(String... palabras) {
         StringBuilder sb = new StringBuilder(palabras.length);
         for (String palabra : palabras) {
-            sb.append(palabra).append(" ");
+            sb.append(palabra).append(Constantes.espacio);
         }
         return sb.toString();
     }
